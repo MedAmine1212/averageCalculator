@@ -1,0 +1,207 @@
+<html>
+<head>
+	<title>Average calculator</title>
+	<meta charset="utf-8">
+<style>
+	l {
+		-webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+	}
+</style>
+</head>
+<body><br>
+	<div style="text-align: center"><h1>Average calculator</h1></div>
+<div style="margin: 5%">
+<div style="float:left">
+
+Name: <input style="margin-left: 24px" type="text" id="name" placeholder="Subject name"><br><br>
+Note: <input style="margin-left: 31px" oninput="checkValue('note')" type="text" id="note" placeholder="note"> <span style="color: red">*</span><span id="noteErr" style="display:none;margin-left:10px;color:red">Required</span><br><br>
+Coef: <input style="margin-left: 31px" oninput="checkValue('coef')" type="text" id="coef" placeholder="coef"> <span style="color: red">*</span><span id="coefErr" style="display:none;margin-left:10px;color:red">Required</span><br><br>
+CC: <input style="margin-left: 40px" oninput="checkValue('cc')" onkeyup="rmvCoef()" type="text" id="cc" placeholder="cc"><span style="margin-left: 10px">(If exists)</span><br><br>
+<div style="height: 40px"><div id="ccCoefContainer" style="display: none">CC Coef: <input oninput="checkValue('ccCoef')" style="margin-left: 5px" type="text" id="ccCoef" placeholder="CC Coef"> <span style="color: red">*</span><span id="ccCoefErr" style="display:none;margin-left:10px;color:red">Required</span></div></div>
+<input type="button" id="addButt" onclick="checkInputs()" value="Add"><br><br><br>
+
+Add all then press Calculate to get moy ! <br><br>
+
+<input type="button" id="calcButt" onclick="calcul()" disabled value="Calculate">
+	<button onclick="resetAll()">Reset</button><br><br><br>
+
+<b>
+Average: <input type="text" id="result" readonly placeholder="result"><br><br>
+</b>
+</div>
+<div style="float: right;margin-right: 40%;width: 400px">
+
+	<table style="text-align:center;width: 160%" border="1">
+		<tr>
+
+			<th style="width:20%">
+				Subject name
+			</th>
+			<th style="width:20%">
+				Note
+			</th>
+			<th style="width:20%">
+				Coef
+			</th>
+			<th style="width:20%">
+				CC
+			</th>
+			<th style="width:20%">
+				CC Coef
+			</th>
+			<th style="width:40%">
+				Average
+			</th>
+			<th style="width:40%">
+				Tools
+			</th>
+			
+		</tr>
+		<tbody id="notesContainer">
+			
+		</tbody>
+	</table>
+	</div>
+</div>
+<script>
+	var moyenne = 0;
+	var sumCoef =0;
+	function rmvCoef() {
+		if(document.getElementById("cc").value == "") {
+
+				document.getElementById("ccCoefContainer").style.display="none";
+				document.getElementById("ccCoef").value="";
+		}
+	}
+	function checkValue(id) {
+		if (isNaN(parseFloat(document.getElementById(id).value))){
+				document.getElementById(id).value =  document.getElementById(id).value.substr(0,document.getElementById(id).value.length-1);
+		} else {
+
+		if (id == "cc") {
+				document.getElementById("ccCoefContainer").style.display="inherit";
+			document.getElementById("ccCoefErr").style.display ="none";
+			} else {
+			document.getElementById(id+"Err").style.display ="none";
+			}
+		}
+	}
+
+	async function checkInputs() {
+		document.getElementById("calcButt").disabled = true;
+		document.getElementById("addButt").disabled = true;
+		let add = true;
+		if (document.getElementById("note").value =="") {
+			add = false;
+			document.getElementById("noteErr").style.display ="inline-block";
+		} 
+		if(document.getElementById("coef").value =="") {
+			add = false;
+			document.getElementById("coefErr").style.display ="inline-block";
+		}
+		if (document.getElementById("cc").value !="") {
+			if (document.getElementById("ccCoef").value =="") {
+			add = false;
+				document.getElementById("ccCoefErr").style.display ="inline-block";
+			}
+		}
+		if (add) {
+			addSubject();
+			document.getElementById("ccCoefErr").disabled = false;
+		} else {
+
+		document.getElementById("addButt").disabled = false;
+		document.getElementById("calcButt").disabled = false;
+		}
+	} 		
+	function addSubject() {
+		let ccText =" - ";
+		let moy = 0;
+		let cc = 0;
+		let coef = 0;
+		let ccCoef = " - ";
+		let subName = " - ";
+		let id;
+
+		if(document.getElementById("name").value.length >2 && document.getElementById("name").value != "   ") {
+			subName = document.getElementById("name").value;
+		}
+		coef = parseFloat(document.getElementById("coef").value);
+		if (document.getElementById("cc").value !="") {
+			ccCoef = document.getElementById("ccCoef").value;
+			cc = parseFloat(document.getElementById("cc").value);
+			ccText = cc;
+		} else {
+			cc = -1;
+		}
+		note =parseFloat(document.getElementById("note").value);
+		document.getElementById("name").value="";
+		document.getElementById("note").value="";
+		document.getElementById("cc").value="";
+		document.getElementById("coef").value="";
+		document.getElementById("ccCoef").value="";
+		document.getElementById("ccCoefContainer").style.display="none";
+		sumCoef +=coef;
+		if (cc == -1) {
+			moy = note;
+		} else {
+
+		moy = ((ccCoef*cc) + ((1-ccCoef)*note));
+
+		moy = Math.round(moy*100)/100
+
+		}
+		id = Math.floor(Math.random() * 9999999999999999999);
+
+		document.getElementById("notesContainer").innerHTML = document.getElementById("notesContainer").innerHTML+ "<tr id='tr"+id+"'><td>"+subName+"</td><td>"+note+"</td><td>"+coef+"</td><td>"+ccText+"</td><td>"+ccCoef+"</td><td><b>"+moy+"</b></td><td><input type='button' value='Delete' onclick='deleteThis(\"tr"+id+"\","+moy+","+coef+")'></td></tr>";
+		moy *=coef;
+		moyenne+= moy;
+		document.getElementById("name").focus();
+		document.getElementById("addButt").disabled = false;
+		document.getElementById("calcButt").disabled = false;
+	}
+
+	function calcul() {
+		let moy = moyenne;
+		moy/=sumCoef;
+		moy = Math.round(moy*100)/100
+		document.getElementById("result").value = moy;
+	}
+
+	function resetAll() {
+		moyenne = 0;
+		sumCoef = 0;
+
+		document.getElementById("result").value="";
+		document.getElementById("name").value="";
+		document.getElementById("note").value="";
+		document.getElementById("cc").value="";
+		document.getElementById("coef").value="";
+		document.getElementById("ccCoef").value="";
+		document.getElementById("notesContainer").innerHTML = "";
+		document.getElementById("calcButt").disabled = true;
+		document.getElementById("noteErr").style.display = "none";
+		document.getElementById("coefErr").style.display = "none";
+		document.getElementById("ccCoefErr").style.display = "none";
+		document.getElementById("ccCoefContainer").style.display="none";
+	}
+
+	function deleteThis(id, moy, coef) {
+		sumCoef-=coef;
+		moyenne-=(moy*coef);
+		if (moyenne < 0) {
+			moyenne = 0;
+		}
+		document.getElementById(id).remove();
+	}
+
+</script>
+</body>
+</html>
